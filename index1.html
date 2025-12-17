@@ -5,73 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZENO</title>
     <style>
+        /* Fond noir */
         body {
             margin: 0;
             height: 100vh;
             background-color: black;
             overflow: hidden;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             font-family: Arial, sans-serif;
         }
 
+        /* Texte ZENO en blanc */
         h1 {
             color: white;
             font-size: 5em;
             z-index: 10;
             position: absolute;
-            top: 20%;
         }
 
+        /* Canvas pour animation des toiles */
         canvas {
             position: absolute;
             top: 0;
             left: 0;
         }
 
-        /* Style futuriste des boutons */
-        .btn {
-            background-color: rgba(138, 43, 226, 0.2);
-            color: white;
-            border: 2px solid rgba(138, 43, 226, 0.8);
-            padding: 15px 40px;
-            font-size: 1.2em;
-            margin: 15px;
-            cursor: pointer;
-            transition: 0.3s;
-            z-index: 10;
-            position: relative;
-            border-radius: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        /* Conteneur des boutons */
+        .top-right-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 20;
         }
 
-        .btn:hover {
+        /* Style des boutons */
+        .top-right-buttons button {
             background-color: rgba(138, 43, 226, 0.8);
             color: white;
-            box-shadow: 0 0 20px rgba(138, 43, 226, 1), 0 0 40px rgba(138, 43, 226, 0.7);
-            transform: scale(1.05);
+            border: none;
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .button-container {
-            position: absolute;
-            top: 60%;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            width: 100%;
+        .top-right-buttons button:hover {
+            background-color: rgba(138, 43, 226, 1);
         }
     </style>
 </head>
 <body>
     <h1>ZENO</h1>
 
-    <div class="button-container">
-        <button class="btn" onclick="alert('Créer un compte')">Créer un compte</button>
-        <button class="btn" onclick="alert('Se connecter')">Se connecter</button>
+    <!-- Boutons en haut à droite -->
+    <div class="top-right-buttons">
+        <button id="signupBtn">Créer un compte</button>
+        <button id="loginBtn">Connexion</button>
     </div>
 
     <canvas id="canvas"></canvas>
@@ -83,8 +76,9 @@
         let height = canvas.height = window.innerHeight;
 
         const particles = [];
-        const particleCount = 120;
+        const particleCount = 100;
 
+        // Création des particules
         for (let i = 0; i < particleCount; i++) {
             particles.push({
                 x: Math.random() * width,
@@ -94,28 +88,10 @@
             });
         }
 
-        // Obtenir la position des boutons
-        const buttons = document.querySelectorAll('.btn');
-        const buttonCenters = [];
-
-        function updateButtonCenters() {
-            buttonCenters.length = 0;
-            buttons.forEach(btn => {
-                const rect = btn.getBoundingClientRect();
-                buttonCenters.push({
-                    x: rect.left + rect.width / 2,
-                    y: rect.top + rect.height / 2
-                });
-            });
-        }
-
-        updateButtonCenters();
-        window.addEventListener('resize', updateButtonCenters);
-
         function draw() {
             ctx.clearRect(0, 0, width, height);
 
-            // Dessiner les lignes
+            // Dessiner les lignes entre particules proches
             for (let i = 0; i < particles.length; i++) {
                 let p1 = particles[i];
                 for (let j = i + 1; j < particles.length; j++) {
@@ -124,7 +100,7 @@
                     let dy = p1.y - p2.y;
                     let dist = Math.sqrt(dx*dx + dy*dy);
                     if (dist < 150) {
-                        ctx.strokeStyle = 'rgba(138,43,226,' + (1 - dist/150) + ')';
+                        ctx.strokeStyle = 'rgba(138,43,226,' + (1 - dist/150) + ')'; // violet
                         ctx.lineWidth = 1;
                         ctx.beginPath();
                         ctx.moveTo(p1.x, p1.y);
@@ -134,20 +110,9 @@
                 }
             }
 
-            // Déplacement des particules
+            // Déplacer les particules
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
-                // Effet “aimanté” vers boutons
-                buttonCenters.forEach(center => {
-                    const dx = center.x - p.x;
-                    const dy = center.y - p.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < 200) {
-                        p.vx += dx * 0.0005;
-                        p.vy += dy * 0.0005;
-                    }
-                });
-
                 p.x += p.vx;
                 p.y += p.vy;
 
@@ -160,10 +125,23 @@
 
         draw();
 
+        // Redimensionner le canvas si la fenêtre change
         window.addEventListener('resize', () => {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
-            updateButtonCenters();
+        });
+
+        // Fonctionnalité des boutons
+        document.getElementById('signupBtn').addEventListener('click', () => {
+            alert("Bouton 'Créer un compte' cliqué !");
+            // Ici tu peux rediriger vers la page d'inscription
+            // window.location.href = 'inscription.html';
+        });
+
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            alert("Bouton 'Connexion' cliqué !");
+            // Ici tu peux rediriger vers la page de connexion
+            // window.location.href = 'connexion.html';
         });
     </script>
 </body>
